@@ -1,5 +1,5 @@
-csvawk
-======
+`csvawk`
+========
 
 AWK for CSV files.
 
@@ -46,7 +46,7 @@ foo,"bar","baz"
 multiple lines","enclosure ""in"" field"
 ```
 
-That's why I created **csvawk**. This tool can handle every kind of CSV,
+That's why I created `csvawk`. This tool can handle every kind of CSV,
 without wondering if every field is quoted, and checking that a field
 can't contain the delimiter nor the enclosure.
 
