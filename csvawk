@@ -9,8 +9,8 @@ Arguments:
 Options:
   -h, --help                 Show this screen.
   --version                  Show version.
-  -d, --delimiter=<char>     CSV delimiter [default: `,`].
-  -e, --enclosure=<char>     CSV enclosure [default: `"`].
+  -d, --delimiter=<char>     CSV delimiter [default: ,].
+  -e, --enclosure=<char>     CSV enclosure [default: "].
   --output-delimiter=<char>  Output delimiter if different.
   --output-enclosure=<char>  Output enclosure if different.
 '''
@@ -27,16 +27,16 @@ RS = '\f' + '0'
 FS = '\f' + '1'
 
 
-def input_filter():
-    reader = csv.reader(sys.stdin)
+def input_filter(delimiter, enclosure):
+    reader = csv.reader(sys.stdin, delimiter=delimiter, quotechar=enclosure)
 
     for row in reader:
         input = (FS.join(row) + RS)
         sys.stdout.write(input)
 
 
-def output_filter():
-    writer = csv.writer(sys.stdout)
+def output_filter(delimiter, enclosure):
+    writer = csv.writer(sys.stdout, delimiter=delimiter, quotechar=enclosure)
     buffer = ''
 
     for char in iter(lambda: sys.stdin.read(1), ''):
@@ -50,23 +50,33 @@ def output_filter():
 def main():
     if len(sys.argv) > 1:
         if sys.argv[1] == '--if':
-            return input_filter()
+            return input_filter(*sys.argv[2:])
         elif sys.argv[1] == '--of':
-            return output_filter()
+            return output_filter(*sys.argv[2:])
 
     args = docopt(__doc__, version='0.1')
+    me = sys.argv[0]
 
     if args['<file>'] is None:
         input = sys.stdin
     else:
         input = open(args['<file>'], 'r')
 
+    id = od = args['--delimiter']
+    ie = oe = args['--enclosure']
+
+    if args['--output-delimiter'] is not None:
+        od = args['--output-delimiter']
+
+    if args['--output-enclosure'] is not None:
+        oe = args['--output-enclosure']
+
     program = BEGIN + args['<program>']
     output = sys.stdout
 
-    pinput = Popen([sys.argv[0], '--if'], stdin=input, stdout=PIPE)
+    pinput = Popen([me, '--if', id, ie], stdin=input, stdout=PIPE)
     pawk = Popen(['awk', program], stdin=pinput.stdout, stdout=PIPE)
-    poutput = Popen([sys.argv[0], '--of'], stdin=pawk.stdout, stdout=output)
+    poutput = Popen([me, '--of', od, oe], stdin=pawk.stdout, stdout=output)
 
     pinput.wait()
     pawk.wait()
