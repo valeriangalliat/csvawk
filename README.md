@@ -53,9 +53,9 @@ can't contain the delimiter nor the enclosure.
 Dependencies
 ------------
 
-* Python&nbsp;3
-* docopt <https://pypi.python.org/pypi/docopt/0.6.2>
-* AWK
+* `python3`
+  * `docopt` <https://pypi.python.org/pypi/docopt/0.6.2>
+* `awk`
 
 Examples
 --------
